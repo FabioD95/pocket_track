@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Transaction, { ITransaction } from "../models/transaction";
+import Transaction, { ITransaction } from "../models/Transaction";
 
 export const addTransaction = async (req: Request, res: Response) => {
   const {

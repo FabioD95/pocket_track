@@ -6,8 +6,8 @@ export interface ITransaction extends Document {
   type: "income" | "expense";
   executedBy: string;
   beneficiary?: string;
-  category: string;
-  tags?: string[];
+  category: mongoose.Types.ObjectId; // Riferimento al modello Categoria
+  tags?: mongoose.Types.ObjectId[]; // Array di riferimenti al modello Tag
   description?: string;
   isNecessary: boolean;
 }
@@ -18,8 +18,12 @@ const TransactionSchema: Schema = new mongoose.Schema({
   type: { type: String, enum: ["income", "expense"], required: true },
   executedBy: { type: String, required: true },
   beneficiary: { type: String },
-  category: { type: String, required: true },
-  tags: { type: [String] },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+    required: true,
+  },
+  tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag" }],
   description: { type: String },
   isNecessary: { type: Boolean, required: true },
 });
