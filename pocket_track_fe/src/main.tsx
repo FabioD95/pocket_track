@@ -8,20 +8,36 @@ import store from './store';
 import App from './App.tsx';
 import Auth from './pages/Auth.tsx';
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: '/',
+      children: [
+        { index: true, element: <App /> },
+        { path: 'auth', element: <Auth /> },
+      ],
+    },
+  ],
   {
-    path: '/',
-    children: [
-      { index: true, element: <App /> },
-      { path: 'auth', element: <Auth /> },
-    ],
-  },
-]);
+    future: {
+      v7_relativeSplatPath: true,
+      v7_fetcherPersist: true,
+      v7_normalizeFormMethod: true,
+      v7_partialHydration: true,
+      v7_skipActionErrorRevalidation: true,
+    },
+  }
+);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <RouterProvider
+        router={router}
+        future={{
+          v7_startTransition: true,
+        }}
+      />
     </Provider>
   </StrictMode>
 );
