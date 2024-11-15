@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import fetchData, { FetchData } from '../utils/fetchData';
 
-interface UseFetch {
+export interface UseFetch {
   loading: boolean;
   error: string | null;
   data: object | null;

@@ -1,23 +1,31 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import useFetch from '../hooks/useFetch';
+import { loginSuccess } from '../store/authSlice';
 
 export default function Auth() {
+  const dispatch = useDispatch();
+
   //   const [isLogin, setIsLogin] = useState(true);
   //   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const { loading, error, fetchFn } = useFetch({
+  const { loading, error, data, fetchFn } = useFetch({
     methot: 'post',
     route: 'users/login',
     body: { email, password },
     autorization: false,
-    // dispatch function
   });
 
   function handleSubmit() {
     fetchFn();
+  }
+
+  if (data) {
+    const useData = data as { token: string };
+    dispatch(loginSuccess({ user: null, token: useData.token }));
   }
 
   return (
