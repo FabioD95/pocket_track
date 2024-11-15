@@ -1,5 +1,7 @@
 import express, { Application } from "express";
 import dotenv from "dotenv";
+import cors from "cors";
+
 import connectDB from "./config/db";
 import userRoutes from "./routes/userRoutes";
 import transactionRoutes from "./routes/transactionRoutes";
@@ -10,6 +12,14 @@ dotenv.config();
 connectDB();
 
 const app: Application = express();
+
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Consenti richieste dal frontend
+    methods: "GET,POST,PUT,DELETE", // Specifica i metodi consentiti
+    allowedHeaders: "Content-Type,Authorization", // Specifica gli header consentiti
+  })
+);
 
 app.use(express.json());
 app.use("/api/users", userRoutes);
