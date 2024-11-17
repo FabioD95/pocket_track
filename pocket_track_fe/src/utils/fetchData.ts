@@ -1,4 +1,5 @@
 import axios from 'axios';
+import store from '../store';
 
 export interface FetchData {
   methot: 'get' | 'post' | 'put' | 'delete';
@@ -15,12 +16,12 @@ export default async function fetchData({
   body,
   autorization = true,
 }: FetchData): Promise<object> {
+  const state = store.getState();
+  const token = state.auth.token;
   const response = await axios({
     method: methot,
     url: `${url}/${route}`,
-    headers: autorization
-      ? { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      : undefined,
+    headers: autorization ? { Authorization: `Bearer ${token}` } : undefined,
     data: body ? body : undefined,
   });
 

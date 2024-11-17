@@ -8,16 +8,18 @@ import './index.css';
 import store, { persistor } from './store';
 import App from './App.tsx';
 import Auth from './pages/Auth.tsx';
+import LandingPage from './pages/LandingPage.tsx';
+import ProtectedRoute from './pages/ProtectedRoute.tsx';
 
 const router = createBrowserRouter(
   [
     {
       path: '/',
-      children: [
-        { index: true, element: <App /> },
-        { path: 'auth', element: <Auth /> },
-      ],
+      element: <ProtectedRoute />,
+      children: [{ index: true, element: <LandingPage /> }],
     },
+    { path: '/app', element: <App /> },
+    { path: '/auth', element: <Auth /> },
   ],
   {
     future: {

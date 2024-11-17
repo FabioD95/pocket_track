@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import useFetch from '../hooks/useFetch';
 import { loginSuccess } from '../store/authSlice';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Auth() {
   const dispatch = useDispatch();
@@ -26,7 +27,7 @@ export default function Auth() {
 
   if (data) {
     const useData = data as { token: string };
-    dispatch(loginSuccess({ user: null, token: useData.token }));
+    dispatch(loginSuccess({ token: useData.token }));
   }
 
   return (
@@ -48,6 +49,8 @@ export default function Auth() {
         />
         <button>submit</button>
       </form>
+
+      <Link to="/">home</Link>
 
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}
