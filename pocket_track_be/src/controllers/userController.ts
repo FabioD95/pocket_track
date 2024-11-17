@@ -58,3 +58,29 @@ export const loginUser = async (req: Request, res: Response) => {
     }
   }
 };
+
+export interface GetUserDataRequest extends Request {
+  user?: IUser;
+}
+
+export const getUserData = async (
+  req: GetUserDataRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ message: "Dati mancanti" });
+      return;
+    }
+    const user = await User.findById(req.user.id).select("-password"); // Esclude la password
+
+    if (!user) {
+      res.status(404).json({ message: "Utente non trovato" });
+      return;
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Errore del server", error });
+  }
+};

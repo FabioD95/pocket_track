@@ -1,8 +1,10 @@
 import request from "supertest";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
+import jwt from "jsonwebtoken";
 
 import app from "../app";
+import User from "../models/User";
 
 let mongoServer: MongoMemoryServer;
 
@@ -78,5 +80,30 @@ describe("User API Tests", () => {
 
     expect(res.statusCode).toBe(400);
     expect(res.body).toHaveProperty("message", "Email già registrata");
+  });
+
+  it("should return user data for authenticated user", async () => {
+    // Crea un utente finto
+    const user = await User.create({
+      name: "Test User",
+      email: "test@example.com",
+      password: "password123",
+    });
+
+    // Genera un token JWT
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string);
+
+    const res = await request(app)
+      .get("/api/users/me")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty("email", user.email);
+  });
+
+  it("should return 401 for unauthenticated request", async () => {
+    const res = await request(app).get("/api/users/me");
+    expect(res.statusCode).toBe(401);
+    expect(res.body).toHaveProperty("message", "Token mancante");
   });
 });
