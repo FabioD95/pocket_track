@@ -9,7 +9,9 @@ import categoryRoutes from "./routes/categoryRoutes";
 import tagRoutes from "./routes/tagRoutes";
 
 dotenv.config();
-connectDB();
+if (process.env.NODE_ENV !== "test") {
+  connectDB(); // Avvia la connessione solo se non sei in ambiente di test
+}
 
 const app: Application = express();
 

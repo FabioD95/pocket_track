@@ -3,27 +3,16 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import jwt from "jsonwebtoken";
 
+import connectDB, { disconnectDB } from "../config/db";
 import app from "../app";
 import User from "../models/User";
 
-let mongoServer: MongoMemoryServer;
-
 beforeAll(async () => {
-  // Crea il server MongoDB in memoria
-  mongoServer = await MongoMemoryServer.create();
-  // Ottieni l'URI generato automaticamente
-  const uri = mongoServer.getUri();
-  // Connettiti al database con l'URI
-  if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(uri, { dbName: "testDB" });
-  }
+  await connectDB();
 });
 
 afterAll(async () => {
-  // Chiudi tutte le connessioni
-  //   await mongoose.connection.dropDatabase();
-  await mongoose.connection.close();
-  await mongoServer.stop();
+  await disconnectDB();
 });
 
 afterEach(async () => {
