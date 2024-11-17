@@ -9,8 +9,7 @@ const connectDB = async () => {
     if (process.env.NODE_ENV === "dev") {
       await mongoose.connect(process.env.MONGO_URI as string);
       console.log("MongoDB connected in dev mode");
-    }
-    if (process.env.NODE_ENV === "test") {
+    } else if (process.env.NODE_ENV === "test") {
       mongoMemoryServer = await MongoMemoryServer.create();
       const uri = mongoMemoryServer.getUri();
       await mongoose.connect(uri, { dbName: "testDB" });
