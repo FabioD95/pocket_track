@@ -6,15 +6,15 @@ export interface UseFetch {
   error: string | null;
   data: object | null;
   setData: React.Dispatch<React.SetStateAction<object | null>>;
-  fetchFn: () => Promise<void>;
+  fetchFn: (props: FetchData) => Promise<void>;
 }
 
-export default function useFetch(props: FetchData): UseFetch {
+export default function useFetch(): UseFetch {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<object | null>(null);
 
-  async function fetchFn() {
+  async function fetchFn(props: FetchData) {
     setLoading(true);
     try {
       const response = await fetchData(props);
