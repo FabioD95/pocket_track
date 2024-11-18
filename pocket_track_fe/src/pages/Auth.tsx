@@ -4,10 +4,7 @@ import useFetch from '../hooks/useFetch';
 import { loginSuccess } from '../store/authSlice';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-
-interface AuthResponse {
-  token: string;
-}
+import { AuthResponse, AuthResponseSchema } from '../types/apiSchemas';
 
 export default function Auth() {
   const dispatch = useDispatch();
@@ -20,12 +17,12 @@ export default function Auth() {
     fetchFn({
       methot: 'post',
       route: `users/${isLogin ? 'login' : 'register'}`,
+      schema: AuthResponseSchema,
       body: {
         name: formData.get('name') ?? (undefined as string | undefined),
         email: formData.get('email') as string,
         password: formData.get('password') as string,
       },
-      autorization: false,
     });
   }
 

@@ -6,7 +6,7 @@ export interface UseFetch<T> {
   error: string | null;
   data: T | null;
   setData: React.Dispatch<React.SetStateAction<T | null>>;
-  fetchFn: (props: FetchData) => Promise<void>;
+  fetchFn: (props: FetchData<T, object>) => Promise<void>;
 }
 
 export default function useFetch<T = object>(): UseFetch<T> {
@@ -14,11 +14,11 @@ export default function useFetch<T = object>(): UseFetch<T> {
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<T | null>(null);
 
-  async function fetchFn(props: FetchData) {
+  async function fetchFn(props: FetchData<T, object>) {
     setLoading(true);
     try {
-      const response = await fetchData(props);
-      setData(response as T);
+      const response = await fetchData<T, object>(props);
+      setData(response);
       setError(null);
     } catch (error) {
       if (error instanceof Error) setError(error.message);

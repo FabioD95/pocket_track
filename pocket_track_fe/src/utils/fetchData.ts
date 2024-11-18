@@ -1,30 +1,37 @@
-import axios from 'axios';
-import store from '../store';
+import { ZodSchema } from 'zod';
+import axiosInstance from './axiosInstance';
 
-export interface FetchData {
+export interface FetchData<T, B = object> {
   methot: 'get' | 'post' | 'put' | 'delete';
   route: string;
-  body?: object;
-  autorization?: boolean;
+  body?: B; // Tipo del corpo della richiesta
+  schema?: ZodSchema<T>;
 }
 
-const url = import.meta.env.VITE_BACKEND_URL;
-
-export default async function fetchData({
+export default async function fetchData<T, B = object>({
   methot,
   route,
   body,
-  autorization = true,
-}: FetchData): Promise<object> {
-  const state = store.getState();
-  const token = state.auth.token;
-  const response = await axios({
+  schema,
+}: FetchData<T, B>): Promise<T> {
+  const response = await axiosInstance({
     method: methot,
-    url: `${url}/${route}`,
-    headers: autorization ? { Authorization: `Bearer ${token}` } : undefined,
-    data: body ? body : undefined,
+    url: route,
+    data: body,
   });
 
   if (response.statusText !== 'OK') throw new Error('Failed to fetch data');
-  return response.data;
+
+  const data = response.data;
+
+  if (schema) {
+    try {
+      return schema.parse(data);
+    } catch (error) {
+      console.error('Schema validation failed:', error);
+      throw new Error('Validation failed. Please contact support.');
+    }
+  }
+
+  return data as T;
 }
