@@ -4,6 +4,12 @@ import fetchData from '../utils/fetchData';
 import { useEffect, useState } from 'react';
 import { setUser } from '../store/authSlice';
 
+interface User {
+  id: string;
+  email: string;
+  name: string;
+}
+
 const isAuthenticated = async (): Promise<boolean> => {
   const state = store.getState();
   const token = state.auth.token;
@@ -14,10 +20,10 @@ const isAuthenticated = async (): Promise<boolean> => {
       methot: 'get',
       route: 'users/me',
     });
-    console.log(response);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    store.dispatch(setUser({ user: response }));
+
+    const user = response as User;
+
+    store.dispatch(setUser({ user }));
     return true;
   } catch {
     return false;

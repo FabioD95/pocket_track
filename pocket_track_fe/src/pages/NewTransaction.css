@@ -1,0 +1,11 @@
+.new-transaction-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .new-transaction-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Optional: Adds space between elements */
+  }

@@ -5,10 +5,14 @@ import { loginSuccess } from '../store/authSlice';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+interface AuthResponse {
+  token: string;
+}
+
 export default function Auth() {
   const dispatch = useDispatch();
   const [isLogin, setIsLogin] = useState(true);
-  const { loading, error, data, fetchFn } = useFetch();
+  const { loading, error, data, fetchFn } = useFetch<AuthResponse>();
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -26,8 +30,7 @@ export default function Auth() {
   }
 
   if (data) {
-    const useData = data as { token: string };
-    dispatch(loginSuccess({ token: useData.token }));
+    dispatch(loginSuccess({ token: data.token }));
   }
 
   return (
@@ -51,6 +54,7 @@ export default function Auth() {
       </form>
 
       <Link to="/">home</Link>
+      <Link to="/new-transaction">new-transaction</Link>
 
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}
