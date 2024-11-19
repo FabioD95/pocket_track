@@ -90,14 +90,10 @@ const ListSelector: React.FC<ListSelectorProps> = ({
 
   const handleCreateNewItem = useCallback(async () => {
     if (inputValue.trim() !== '') {
-      console.log('inputValue:', inputValue);
       try {
         const newItem = await createItem(inputValue.trim());
-        console.log('newItem:', newItem);
         setAvailableItems((prev) => [...prev, newItem]);
-        console.log('availableItems:', availableItems);
         addItem(newItem); // Seleziona l'elemento appena creato
-        console.log('selectedItems:', selectedItems);
         setInputValue('');
       } catch (error) {
         console.error('Errore nella creazione del nuovo elemento:', error);

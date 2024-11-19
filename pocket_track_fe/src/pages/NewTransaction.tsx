@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import useFetch from '../hooks/useFetch';
 import {
   Categories,
@@ -108,6 +108,42 @@ export default function NewTransaction() {
     }
   }
 
+  const fetchCategories = useCallback(() => {
+    return fetchData<Categories>({
+      method: 'get',
+      route: 'categories',
+      schema: CategoriesSchema,
+    });
+  }, []);
+
+  const createCategories = useCallback(async (name: string) => {
+    const response = await fetchData<GetCategory>({
+      method: 'post',
+      route: 'categories',
+      schema: GetCategorySchema,
+      body: { name },
+    });
+    return response.category;
+  }, []);
+
+  const fetchTags = useCallback(() => {
+    return fetchData<Tags>({
+      method: 'get',
+      route: 'tags',
+      schema: TagsSchema,
+    });
+  }, []);
+
+  const createTags = useCallback(async (name: string) => {
+    const response = await fetchData<GetTag>({
+      method: 'post',
+      route: 'tags',
+      schema: GetTagSchema,
+      body: { name },
+    });
+    return response.tag;
+  }, []);
+
   return (
     <div className="new-transaction-container">
       <h1>New Transaction</h1>
@@ -138,25 +174,8 @@ export default function NewTransaction() {
             />
 
             <ListSelector
-              fetchItems={() =>
-                fetchData<Categories>({
-                  method: 'get',
-                  route: 'categories',
-                  schema: CategoriesSchema,
-                })
-              }
-              createItem={async (name: string) => {
-                const response = await fetchData<GetCategory>({
-                  method: 'post',
-                  route: 'categories',
-                  schema: GetCategorySchema,
-                  body: { name },
-                });
-                return {
-                  _id: response.category._id,
-                  name: response.category.name,
-                };
-              }}
+              fetchItems={fetchCategories}
+              createItem={createCategories}
               onItemsChange={(categories) =>
                 setSelectedCategories(categories[0])
               }
@@ -166,25 +185,8 @@ export default function NewTransaction() {
             />
 
             <ListSelector
-              fetchItems={() =>
-                fetchData<Tags>({
-                  method: 'get',
-                  route: 'tags',
-                  schema: TagsSchema,
-                })
-              }
-              createItem={async (name: string) => {
-                const response = await fetchData<GetTag>({
-                  method: 'post',
-                  route: 'tags',
-                  schema: GetTagSchema,
-                  body: { name },
-                });
-                return {
-                  _id: response.tag._id,
-                  name: response.tag.name,
-                };
-              }}
+              fetchItems={fetchTags}
+              createItem={createTags}
               onItemsChange={(tags) => setSelectedTags(tags)}
               legend="Tags"
               placeholder="Select a tag..."
