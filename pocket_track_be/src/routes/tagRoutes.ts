@@ -1,9 +1,10 @@
 import express from "express";
-import { addTag } from "../controllers/tagController";
+import { addTag, getAllTags } from "../controllers/tagController";
 import authMiddleware from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.post("/add", authMiddleware, addTag);
+router.post("/", authMiddleware, addTag);
+router.get("/", authMiddleware, getAllTags);
 
 export default router;
