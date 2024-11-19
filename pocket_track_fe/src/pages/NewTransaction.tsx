@@ -63,7 +63,7 @@ export default function NewTransaction() {
       body: body,
     });
 
-    (event.target as HTMLFormElement).reset();
+    // (event.target as HTMLFormElement).reset();
   }
 
   function handleTypeChange({

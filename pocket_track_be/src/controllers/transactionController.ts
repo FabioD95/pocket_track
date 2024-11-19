@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Transaction, { ITransaction } from "../models/Transaction";
+import Transaction from "../models/transaction";
 
 export const addTransaction = async (req: Request, res: Response) => {
   const {
@@ -21,7 +21,7 @@ export const addTransaction = async (req: Request, res: Response) => {
   }
 
   if (isTransfer) {
-    await transaction(req, res);
+    await transfer(req, res);
     return;
   }
 
@@ -53,7 +53,7 @@ export const addTransaction = async (req: Request, res: Response) => {
   }
 };
 
-async function transaction(req: Request, res: Response) {
+async function transfer(req: Request, res: Response) {
   const { amount, date, user, transferBeneficiary, description, isTransfer } =
     req.body;
 
@@ -80,9 +80,10 @@ async function transaction(req: Request, res: Response) {
     await transactionOut.save();
     await transactionIn.save();
 
-    res
-      .status(201)
-      .json({ message: "Transazione aggiunta con successo", transaction });
+    res.status(201).json({
+      message: "Transazione aggiunta con successo",
+      transaction: [transactionOut, transactionIn],
+    });
   } catch (error) {
     if (error instanceof Error) {
       res.status(500).json({ message: error.message });

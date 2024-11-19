@@ -38,14 +38,17 @@ export const TransactionSchema = z.object({
   category: z.string().nullable().optional(),
   tags: z.array(z.string().min(1)).nullable().optional(),
   description: z.string().nullable().optional(),
-  isNecessary: z.boolean(),
+  isNecessary: z.boolean().nullable().optional(),
   isTransfer: z.boolean().nullable().optional(),
 });
 export type Transaction = z.infer<typeof TransactionSchema>;
 
 export const GetTransactionSchema = z.object({
-  transaction: TransactionSchema,
   message: z.string().min(1, { message: 'Message cannot be empty.' }),
+  transaction: z.union([
+    TransactionSchema, // Oggetto singolo
+    z.array(TransactionSchema), // Array di oggetti
+  ]),
 });
 export type GetTransaction = z.infer<typeof GetTransactionSchema>;
 
