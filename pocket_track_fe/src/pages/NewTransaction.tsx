@@ -9,13 +9,16 @@ import {
   GetTagSchema,
   GetTransaction,
   GetTransactionSchema,
+  GetUsers,
+  GetUsersSchema,
+  Item,
   PostTransaction,
   Tags,
   TagsSchema,
 } from '../types/apiSchemas';
 import './NewTransaction.css';
 import RadioSelector from '../components/RadioSelector';
-import ListSelector, { Item } from '../components/ListSelector';
+import ListSelector from '../components/ListSelector';
 import fetchData from '../utils/fetchData';
 
 export default function NewTransaction() {
@@ -63,7 +66,7 @@ export default function NewTransaction() {
       body: body,
     });
 
-    // (event.target as HTMLFormElement).reset();
+    (event.target as HTMLFormElement).reset();
   }
 
   function handleTypeChange({
@@ -93,6 +96,14 @@ export default function NewTransaction() {
       setIsValidate(false);
     }
   }
+
+  const fetchUsers = useCallback(() => {
+    return fetchData<GetUsers>({
+      method: 'get',
+      route: 'users/all',
+      schema: GetUsersSchema,
+    });
+  }, []);
 
   const fetchCategories = useCallback(() => {
     return fetchData<Categories>({
@@ -154,10 +165,14 @@ export default function NewTransaction() {
           legend="Type"
           handleChange={handleTypeChange}
           defaultValue={'expense'}
-          items={['expense', 'income', 'transfer']}
+          items={[
+            { _id: 'expense', name: 'expense' },
+            { _id: 'income', name: 'income' },
+            { _id: 'transfer', name: 'transfer' },
+          ]}
         />
 
-        <RadioSelector name="user" legend="User" items={['Fabio', 'Cloe']} />
+        <RadioSelector name="user" legend="User" fetchItems={fetchUsers} />
 
         {!isTransfer ? (
           <>
@@ -189,7 +204,7 @@ export default function NewTransaction() {
           <RadioSelector
             name="transferBeneficiary"
             legend="transferBeneficiary"
-            items={['Fabio', 'Cloe']}
+            fetchItems={fetchUsers}
           />
         )}
 

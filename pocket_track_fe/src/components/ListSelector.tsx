@@ -5,11 +5,7 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-
-export interface Item {
-  _id: string;
-  name: string;
-}
+import { Item } from '../types/apiSchemas';
 
 interface ListSelectorProps {
   fetchItems: () => Promise<Item[]>;

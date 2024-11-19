@@ -1,5 +1,10 @@
 import { z } from 'zod';
 
+export interface Item {
+  _id: string;
+  name: string;
+}
+
 // Validazione della data come stringa ISO8601
 const DateString = z.string().refine(
   (date) => {
@@ -17,6 +22,15 @@ export const UserSchema = z.object({
   name: z.string(),
 });
 export type User = z.infer<typeof UserSchema>;
+
+export const GetUserSchema = z.object({
+  user: UserSchema,
+  message: z.string(),
+});
+export type GetUser = z.infer<typeof GetUserSchema>;
+
+export const GetUsersSchema = z.array(UserSchema);
+export type GetUsers = z.infer<typeof GetUsersSchema>;
 
 // Auth
 export const AuthResponseSchema = z.object({
