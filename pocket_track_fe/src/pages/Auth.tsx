@@ -15,7 +15,7 @@ export default function Auth() {
     event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
     fetchFn({
-      methot: 'post',
+      method: 'post',
       route: `users/${isLogin ? 'login' : 'register'}`,
       schema: AuthResponseSchema,
       body: {

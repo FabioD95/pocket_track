@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import fetchData, { FetchData } from '../utils/fetchData';
 
 export interface UseFetch<T> {
@@ -14,7 +14,7 @@ export default function useFetch<T = object>(): UseFetch<T> {
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<T | null>(null);
 
-  async function fetchFn(props: FetchData<T, object>) {
+  const fetchFn = useCallback(async (props: FetchData<T, object>) => {
     setLoading(true);
     try {
       const response = await fetchData<T, object>(props);
@@ -25,7 +25,18 @@ export default function useFetch<T = object>(): UseFetch<T> {
       else throw new Error('Failed to fetch data');
     }
     setLoading(false);
-  }
+  }, []);
 
-  return { loading, error, data, setData, fetchFn };
+  const result = useMemo(
+    () => ({
+      loading,
+      error,
+      data,
+      setData,
+      fetchFn,
+    }),
+    [loading, error, data, fetchFn]
+  );
+
+  return result;
 }

@@ -19,7 +19,7 @@ const useAuth = (): boolean | null => {
 
       try {
         const response = await fetchData<User>({
-          methot: 'get',
+          method: 'get',
           route: 'users/me',
           schema: UserSchema,
         });
