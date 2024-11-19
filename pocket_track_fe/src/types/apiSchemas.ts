@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+// Validazione della data come stringa ISO8601
+const DateString = z.string().refine(
+  (date) => {
+    return !isNaN(Date.parse(date)); // Controlla che la stringa sia una data valida
+  },
+  {
+    message: 'Invalid date format. Use a valid ISO8601 string.',
+  }
+);
+
 // User
 export const UserSchema = z.object({
   _id: z.string(),
@@ -17,18 +27,26 @@ export type AuthResponse = z.infer<typeof AuthResponseSchema>;
 
 // Transactions
 export const TransactionSchema = z.object({
-  _id: z.string(),
-  amount: z.number(),
-  date: z.string().date(),
+  _id: z
+    .string()
+    .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' }),
+  amount: z.number().positive({ message: 'Amount must be a positive number.' }),
+  date: DateString, // Usa la validazione personalizzata
   type: z.enum(['expense', 'income', 'transfer']),
-  executedBy: z.string(),
-  beneficiary: z.string().optional(),
-  category: z.string(),
-  tags: z.array(z.string()).optional(),
-  description: z.string().optional(),
+  executedBy: z.string().min(1, { message: 'ExecutedBy is required.' }),
+  beneficiary: z.string().nullable().optional(),
+  category: z.string().nullable().optional(),
+  tags: z.array(z.string().min(1)).nullable().optional(),
+  description: z.string().nullable().optional(),
   isNecessary: z.boolean(),
 });
 export type Transaction = z.infer<typeof TransactionSchema>;
+
+export const GetTransactionSchema = z.object({
+  transaction: TransactionSchema,
+  message: z.string().min(1, { message: 'Message cannot be empty.' }),
+});
+export type GetTransaction = z.infer<typeof GetTransactionSchema>;
 
 export const PostTransactionSchema = TransactionSchema.omit({ _id: true });
 export type PostTransaction = z.infer<typeof PostTransactionSchema>;

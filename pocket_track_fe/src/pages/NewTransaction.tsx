@@ -7,6 +7,8 @@ import {
   GetCategorySchema,
   GetTag,
   GetTagSchema,
+  GetTransaction,
+  GetTransactionSchema,
   PostTransaction,
   Tags,
   TagsSchema,
@@ -17,8 +19,7 @@ import ListSelector, { Item } from '../components/ListSelector';
 import fetchData from '../utils/fetchData';
 
 export default function NewTransaction() {
-  const { loading: submitLoading, error: submitError } =
-    useFetch<PostTransaction>();
+  const { loading, error, fetchFn } = useFetch<GetTransaction>();
 
   const [transfer, setTransfer] = useState(false);
   const [isValidate, setIsValidate] = useState(false);
@@ -53,14 +54,15 @@ export default function NewTransaction() {
       isNecessary: formData.get('isNecessary') === 'on',
     };
     //  ?? (undefined as string | undefined)
-    alert(JSON.stringify(body, null, 2));
+    // alert(JSON.stringify(body, null, 2));
+    console.log(body);
 
-    // fetchFn({
-    //   method: 'post',
-    //   route: `transactions`,
-    //   schema: TransactionSchema,
-    //   body: body,
-    // });
+    fetchFn({
+      method: 'post',
+      route: `transactions`,
+      schema: GetTransactionSchema,
+      body: body,
+    });
 
     // (event.target as HTMLFormElement).reset();
   }
@@ -193,13 +195,13 @@ export default function NewTransaction() {
           </>
         )}
 
-        <button type="submit" disabled={submitLoading}>
-          {submitLoading ? 'Submitting...' : 'Submit'}
+        <button type="submit" disabled={loading}>
+          {loading ? 'Submitting...' : 'Submit'}
         </button>
       </form>
 
-      {submitLoading && <p>Loading...</p>}
-      {submitError && <p>{submitError}</p>}
+      {loading && <p>Loading...</p>}
+      {error && <p>{error}</p>}
     </div>
   );
 }
