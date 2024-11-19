@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import useFetch from '../hooks/useFetch';
 import {
   Categories,
@@ -7,8 +7,6 @@ import {
   GetCategorySchema,
   GetTag,
   GetTagSchema,
-  PostCategories,
-  PostTags,
   PostTransaction,
   Tags,
   TagsSchema,
@@ -21,29 +19,6 @@ import fetchData from '../utils/fetchData';
 export default function NewTransaction() {
   const { loading: submitLoading, error: submitError } =
     useFetch<PostTransaction>();
-
-  const {
-    loading: fetchCategoriesLoading,
-    error: fetchCategoriesError,
-    // data: fetchCategoriesData,
-    fetchFn: fetchCategoriesFn,
-  } = useFetch<PostCategories>();
-
-  const {
-    loading: fetchTagsLoading,
-    error: fetchTagsError,
-    // data: fetchTagsData,
-    fetchFn: fetchTagsFn,
-  } = useFetch<PostTags>();
-
-  useEffect(() => {
-    fetchCategoriesFn({
-      method: 'get',
-      route: 'categories',
-      schema: CategoriesSchema,
-    });
-    fetchTagsFn({ method: 'get', route: 'tags', schema: TagsSchema });
-  }, [fetchCategoriesFn, fetchTagsFn]);
 
   const [transfer, setTransfer] = useState(false);
   const [isValidate, setIsValidate] = useState(false);
@@ -225,10 +200,6 @@ export default function NewTransaction() {
 
       {submitLoading && <p>Loading...</p>}
       {submitError && <p>{submitError}</p>}
-      {fetchCategoriesLoading && <p>Loading categories...</p>}
-      {fetchCategoriesError && <p>{fetchCategoriesError}</p>}
-      {fetchTagsLoading && <p>Loading tags...</p>}
-      {fetchTagsError && <p>{fetchTagsError}</p>}
     </div>
   );
 }
