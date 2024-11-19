@@ -23,3 +23,16 @@ export const addTag = async (req: Request, res: Response) => {
     }
   }
 };
+
+export const getAllTags = async (req: Request, res: Response) => {
+  try {
+    const tags = await Tag.find();
+    res.json(tags);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: "An unknown error occurred" });
+    }
+  }
+};
