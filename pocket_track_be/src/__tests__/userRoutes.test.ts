@@ -1,6 +1,5 @@
 import request from "supertest";
 import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
 import jwt from "jsonwebtoken";
 
 import connectDB, { disconnectDB } from "../config/db";
