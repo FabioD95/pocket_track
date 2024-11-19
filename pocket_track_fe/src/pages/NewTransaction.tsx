@@ -21,7 +21,8 @@ import fetchData from '../utils/fetchData';
 export default function NewTransaction() {
   const { loading, error, fetchFn } = useFetch<GetTransaction>();
 
-  const [transfer, setTransfer] = useState(false);
+  const [isTransfer, setIsTransfer] = useState(false);
+  const [type, setType] = useState<'expense' | 'income'>('expense');
   const [isValidate, setIsValidate] = useState(false);
   const [selectedTags, setSelectedTags] = useState<Item[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<Item>();
@@ -45,17 +46,15 @@ export default function NewTransaction() {
     const body: PostTransaction = {
       amount: Number(formData.get('amount')),
       date: formattedDate,
-      type: formData.get('type') as 'expense' | 'income' | 'transfer',
-      executedBy: formData.get('executedBy') as string,
-      beneficiary: formData.get('beneficiary') as string,
+      type: type,
+      user: formData.get('user') as string,
+      transferBeneficiary: formData.get('transferBeneficiary') as string,
       category: selectedCategories?._id as string,
       tags: selectedTags.map((tag) => tag._id),
       description: formData.get('description') as string,
       isNecessary: formData.get('isNecessary') === 'on',
+      isTransfer: isTransfer,
     };
-    //  ?? (undefined as string | undefined)
-    // alert(JSON.stringify(body, null, 2));
-    console.log(body);
 
     fetchFn({
       method: 'post',
@@ -64,16 +63,23 @@ export default function NewTransaction() {
       body: body,
     });
 
-    // (event.target as HTMLFormElement).reset();
+    (event.target as HTMLFormElement).reset();
   }
 
   function handleTypeChange({
     target: { value },
   }: React.ChangeEvent<HTMLInputElement>) {
     if (value === 'transfer') {
-      setTransfer(true);
-    } else {
-      setTransfer(false);
+      setIsTransfer(true);
+      setType('expense');
+    }
+    if (value === 'expense') {
+      setIsTransfer(false);
+      setType('expense');
+    }
+    if (value === 'income') {
+      setIsTransfer(false);
+      setType('income');
     }
   }
 
@@ -151,14 +157,10 @@ export default function NewTransaction() {
           items={['expense', 'income', 'transfer']}
         />
 
-        {!transfer ? (
-          <>
-            <RadioSelector
-              name="executedBy"
-              legend="Executed By"
-              items={['Fabio', 'Cloe']}
-            />
+        <RadioSelector name="user" legend="User" items={['Fabio', 'Cloe']} />
 
+        {!isTransfer ? (
+          <>
             <ListSelector
               fetchItems={fetchCategories}
               createItem={createCategories}
@@ -178,22 +180,20 @@ export default function NewTransaction() {
               placeholder="Select a tag..."
             />
 
-            <input name="description" type="text" placeholder="description" />
-
             <div>
               <input name="isNecessary" id="isNecessary" type="checkbox" />
               <label htmlFor="isNecessary">isNecessary</label>
             </div>
           </>
         ) : (
-          <>
-            <label>beneficiary</label>
-            <input type="radio" name="beneficiary" checked />
-            <label>Fabio</label>
-            <input type="radio" name="beneficiary" />
-            <label>Cloe</label>
-          </>
+          <RadioSelector
+            name="transferBeneficiary"
+            legend="transferBeneficiary"
+            items={['Fabio', 'Cloe']}
+          />
         )}
+
+        <input name="description" type="text" placeholder="description" />
 
         <button type="submit" disabled={loading}>
           {loading ? 'Submitting...' : 'Submit'}

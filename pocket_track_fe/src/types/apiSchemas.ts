@@ -32,13 +32,14 @@ export const TransactionSchema = z.object({
     .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' }),
   amount: z.number().positive({ message: 'Amount must be a positive number.' }),
   date: DateString, // Usa la validazione personalizzata
-  type: z.enum(['expense', 'income', 'transfer']),
-  executedBy: z.string().min(1, { message: 'ExecutedBy is required.' }),
-  beneficiary: z.string().nullable().optional(),
+  type: z.enum(['expense', 'income']),
+  user: z.string().min(1, { message: 'User is required.' }),
+  transferBeneficiary: z.string().nullable().optional(),
   category: z.string().nullable().optional(),
   tags: z.array(z.string().min(1)).nullable().optional(),
   description: z.string().nullable().optional(),
   isNecessary: z.boolean(),
+  isTransfer: z.boolean().nullable().optional(),
 });
 export type Transaction = z.infer<typeof TransactionSchema>;
 
