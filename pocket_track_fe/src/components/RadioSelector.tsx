@@ -4,6 +4,7 @@ interface RadioSelectorProps {
   name: string;
   legend: string;
   handleChange?: ChangeEventHandler<HTMLInputElement>;
+  defaultValue?: string;
   items: string[];
 }
 
@@ -11,6 +12,7 @@ const RadioSelector: React.FC<RadioSelectorProps> = ({
   name,
   legend,
   handleChange,
+  defaultValue,
   items,
 }) => {
   return (
@@ -24,6 +26,7 @@ const RadioSelector: React.FC<RadioSelectorProps> = ({
             id={type}
             value={type}
             onChange={handleChange}
+            defaultChecked={type === defaultValue}
           />
           <label htmlFor={type}>{type}</label>
         </React.Fragment>

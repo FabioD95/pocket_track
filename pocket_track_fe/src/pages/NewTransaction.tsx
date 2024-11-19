@@ -49,6 +49,9 @@ export default function NewTransaction() {
   const [isValidate, setIsValidate] = useState(false);
   const [selectedTags, setSelectedTags] = useState<Item[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<Item>();
+  const [date, setDate] = useState<string>(
+    () => new Date().toISOString().split('T')[0]
+  );
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -156,12 +159,18 @@ export default function NewTransaction() {
           required
           onBlur={handleAmountBlur}
         />
-        <input name="date" type="date" required />
+        <input
+          type="date"
+          name="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
 
         <RadioSelector
           name="type"
           legend="Type"
           handleChange={handleTypeChange}
+          defaultValue={'expense'}
           items={['expense', 'income', 'transfer']}
         />
 
