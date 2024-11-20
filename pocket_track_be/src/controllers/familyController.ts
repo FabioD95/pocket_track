@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import Family from "../models/Family";
 import { IAuthRequest } from "../utils/types";
 import { getUserById } from "../queries/userQuery";
@@ -52,10 +52,14 @@ export const getFamilies = async (req: IAuthRequest, res: Response) => {
 };
 
 // getUsersByFamilyId
-export const getUsersByFamilyId = async (req: IAuthRequest, res: Response) => {
+export const getUsersByFamilyId = async (req: Request, res: Response) => {
   try {
-    const { familyId } = req.body;
-    if (!req.user) throw new Error("Utente non autorizzato");
+    const { familyId } = req.query;
+
+    if (!familyId) {
+      res.status(400).json({ message: "ID famiglia mancante" });
+      return;
+    }
 
     const users = await User.find({
       families: familyId,

@@ -1,10 +1,16 @@
 import express from "express";
 import authMiddleware from "../middlewares/authMiddleware";
-import { addFamily, getUsersByFamilyId } from "../controllers/familyController";
+import {
+  addFamily,
+  getFamilies,
+  getUsersByFamilyId,
+} from "../controllers/familyController";
 
 const router = express.Router();
 
 router.post("/", authMiddleware, addFamily);
-router.get("/getUsersFamily", authMiddleware, getUsersByFamilyId);
+
+router.get("/", authMiddleware, getFamilies);
+router.get("/users", authMiddleware, getUsersByFamilyId);
 
 export default router;

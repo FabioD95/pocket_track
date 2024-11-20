@@ -7,7 +7,7 @@ import Family from "../models/Family";
 // addTag
 export const addTag = async (req: IAuthRequest, res: Response) => {
   try {
-    const { name } = req.body;
+    const { name, familyId } = req.body;
     if (!req.user) throw new Error("Utente non autorizzato");
 
     const existingTag = await Tag.findOne({ name });
@@ -19,6 +19,9 @@ export const addTag = async (req: IAuthRequest, res: Response) => {
     const tag = new Tag({ name, createdBy: req.user.id });
     await tag.save();
 
+    // add tag to family
+    await Family.updateOne({ _id: familyId }, { $push: { tags: tag._id } });
+
     res.status(201).json({ message: "Tag aggiunto con successo", tag });
   } catch (error) {
     errorResponse(res, error, "addTag");
@@ -28,7 +31,7 @@ export const addTag = async (req: IAuthRequest, res: Response) => {
 // getTags
 export const getTags = async (req: IAuthRequest, res: Response) => {
   try {
-    const { familyId } = req.body;
+    const { familyId } = req.query;
     const family = await Family.findById(familyId);
 
     if (!family) {

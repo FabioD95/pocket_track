@@ -3,20 +3,25 @@ import Transaction from "../models/transaction";
 import { errorResponse } from "../utils/error";
 import Tag from "../models/Tag";
 import Category from "../models/Category";
+import Family from "../models/Family";
 
+// addTransaction
 export const addTransaction = async (req: Request, res: Response) => {
   try {
     const {
-      amount,
-      date,
-      isExpense,
-      user,
-      transferBeneficiary,
-      category,
-      tags,
-      description,
-      isNecessary,
-      isTransfer,
+      transaction: {
+        amount,
+        date,
+        isExpense,
+        user,
+        transferBeneficiary,
+        category,
+        tags,
+        description,
+        isNecessary,
+        isTransfer,
+      },
+      familyId,
     } = req.body;
 
     if (isTransfer && !transferBeneficiary) {
@@ -43,9 +48,11 @@ export const addTransaction = async (req: Request, res: Response) => {
     });
     await transaction.save();
 
-    res
-      .status(201)
-      .json({ message: "Transazione aggiunta con successo", transaction });
+    // update family transactions
+    await Family.updateOne(
+      { _id: familyId },
+      { $push: { transactions: transaction._id } }
+    );
 
     // update tags usageCount
     const tagsToUpdate = await Tag.find({ _id: { $in: tags } });
@@ -55,15 +62,29 @@ export const addTransaction = async (req: Request, res: Response) => {
 
     // update category usageCount
     await Category.updateOne({ _id: category }, { $inc: { usageCount: 1 } });
+
+    res
+      .status(201)
+      .json({ message: "Transazione aggiunta con successo", transaction });
   } catch (error) {
     errorResponse(res, error, "addTransaction");
   }
 };
 
+// transfer function
 async function transfer(req: Request, res: Response) {
   try {
-    const { amount, date, user, transferBeneficiary, description, isTransfer } =
-      req.body;
+    const {
+      transaction: {
+        amount,
+        date,
+        user,
+        transferBeneficiary,
+        description,
+        isTransfer,
+      },
+      familyId,
+    } = req.body;
 
     const transactionOut = new Transaction({
       amount,
@@ -86,6 +107,12 @@ async function transfer(req: Request, res: Response) {
     await transactionOut.save();
     await transactionIn.save();
 
+    // update family transactions
+    await Family.updateOne(
+      { _id: familyId },
+      { $push: { transactions: [transactionOut._id, transactionIn._id] } }
+    );
+
     res.status(201).json({
       message: "Transazione aggiunta con successo",
       transaction: [transactionOut, transactionIn],
@@ -94,3 +121,25 @@ async function transfer(req: Request, res: Response) {
     errorResponse(res, error, "transfer");
   }
 }
+
+// getTransactions by familyId
+export const getTransactions = async (req: Request, res: Response) => {
+  try {
+    const { familyId } = req.query;
+
+    const family = await Family.findById(familyId);
+
+    if (!family) {
+      res.status(404).json({ message: "Famiglia non trovata" });
+      return;
+    }
+
+    const transactions = await Transaction.find({
+      _id: { $in: family.transactions },
+    });
+
+    res.json(transactions);
+  } catch (error) {
+    errorResponse(res, error, "getTransactions");
+  }
+};

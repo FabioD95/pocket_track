@@ -6,8 +6,11 @@ import connectDB, { disconnectDB } from "../config/db";
 import app from "../app";
 import Category from "../models/Category";
 import User from "../models/User";
+import Family from "../models/Family";
 
 let token: string;
+let userId: string;
+let familyId: string;
 
 beforeAll(async () => {
   await connectDB();
@@ -17,8 +20,20 @@ beforeAll(async () => {
     name: "Test User",
     email: "test@example.com",
     password: "password123",
+    families: [familyId],
   });
 
+  // Creazione di una famiglia per l'utente
+  const family = await Family.create({
+    name: "Test Family",
+    createdBy: user.id,
+  });
+  familyId = family.id;
+
+  // Aggiornamento dell'utente con l'id della famiglia
+  await User.findByIdAndUpdate(user.id, { families: [familyId] });
+
+  userId = user.id;
   token = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string);
 });
 
@@ -35,17 +50,32 @@ afterEach(async () => {
 
 describe("Category API Tests", () => {
   describe("GET /api/categories", () => {
-    it("should return all categories for authenticated user", async () => {
-      await Category.create([{ name: "Cibo" }, { name: "Trasporti" }]);
+    it("should return all categories for the authenticated user", async () => {
+      await request(app)
+        .post("/api/categories")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "Cibo", familyId: familyId });
+      await request(app)
+        .post("/api/categories")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "Trasporti", familyId: familyId });
+      await request(app)
+        .post("/api/categories")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          name: "Viaggi",
+          familyId: new mongoose.Types.ObjectId().toString(),
+        }); // Categoria di un altro utente associata a una famiglia diversa
 
       const res = await request(app)
         .get("/api/categories")
-        .set("Authorization", `Bearer ${token}`);
+        .set("Authorization", `Bearer ${token}`)
+        .query({ familyId: familyId });
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveLength(2);
 
-      // Controlla che l'array contenga gli oggetti desiderati, indipendentemente dall'ordine
+      // Controlla che l'array contenga solo le categorie dell'utente
       expect(res.body).toEqual(
         expect.arrayContaining([
           expect.objectContaining({ name: "Cibo" }),
@@ -63,11 +93,11 @@ describe("Category API Tests", () => {
   });
 
   describe("POST /api/categories", () => {
-    it("should add a new category for authenticated user", async () => {
+    it("should add a new category for the authenticated user", async () => {
       const res = await request(app)
         .post("/api/categories")
         .set("Authorization", `Bearer ${token}`)
-        .send({ name: "Nuova Categoria" });
+        .send({ name: "Nuova Categoria", familyId: familyId });
 
       expect(res.statusCode).toBe(201);
       expect(res.body).toHaveProperty(
@@ -76,26 +106,53 @@ describe("Category API Tests", () => {
       );
       expect(res.body.category).toHaveProperty("name", "Nuova Categoria");
 
-      const categoryInDb = await Category.findOne({ name: "Nuova Categoria" });
+      const categoryInDb = await Category.findOne({
+        name: "Nuova Categoria",
+      });
       expect(categoryInDb).not.toBeNull();
     });
 
-    it("should not add a duplicate category", async () => {
-      await Category.create({ name: "Esistente" });
-
+    it("should not add a duplicate category for the same user", async () => {
+      await request(app)
+        .post("/api/categories")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "Esistente", familyId: familyId });
       const res = await request(app)
         .post("/api/categories")
         .set("Authorization", `Bearer ${token}`)
-        .send({ name: "Esistente" });
+        .send({ name: "Esistente", familyId: familyId });
 
       expect(res.statusCode).toBe(400);
       expect(res.body).toHaveProperty("message", "Categoria già esistente");
     });
 
-    it("should return 401 for unauthenticated request", async () => {
+    it("should allow duplicate category names for different users", async () => {
       const res = await request(app)
         .post("/api/categories")
-        .send({ name: "Nuova Categoria" });
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "Duplicata", familyId: familyId });
+      await request(app)
+        .post("/api/categories")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          name: "Duplicata",
+          familyId: new mongoose.Types.ObjectId().toString(),
+        });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.body.category).toHaveProperty("name", "Duplicata");
+
+      const categoryInDb = await Category.findOne({
+        name: "Duplicata",
+      });
+      expect(categoryInDb).not.toBeNull();
+    });
+
+    it("should return 401 for unauthenticated request", async () => {
+      const res = await request(app).post("/api/categories").send({
+        name: "Nuova Categoria",
+        familyId: new mongoose.Types.ObjectId().toString(),
+      });
 
       expect(res.statusCode).toBe(401);
       expect(res.body).toHaveProperty("message", "Token mancante");
@@ -112,7 +169,10 @@ describe("Category API Tests", () => {
         .send({ name: "Errore" });
 
       expect(res.statusCode).toBe(500);
-      expect(res.body).toHaveProperty("message", "Errore del server simulato");
+      expect(res.body).toHaveProperty(
+        "message",
+        "addCategory: Errore del server simulato"
+      );
     });
   });
 });

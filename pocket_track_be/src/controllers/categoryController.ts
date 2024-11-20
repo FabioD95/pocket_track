@@ -7,7 +7,7 @@ import Family from "../models/Family";
 // addCategory
 export const addCategory = async (req: IAuthRequest, res: Response) => {
   try {
-    const { name } = req.body;
+    const { name, familyId } = req.body;
     if (!req.user) throw new Error("Utente non autorizzato");
 
     const existingCategory = await Category.findOne({ name });
@@ -18,6 +18,12 @@ export const addCategory = async (req: IAuthRequest, res: Response) => {
 
     const category = new Category({ name, createdBy: req.user.id });
     await category.save();
+
+    // add category to family
+    await Family.updateOne(
+      { _id: familyId },
+      { $push: { categories: category._id } }
+    );
 
     res
       .status(201)
@@ -30,7 +36,7 @@ export const addCategory = async (req: IAuthRequest, res: Response) => {
 // getCategories
 export const getCategories = async (req: IAuthRequest, res: Response) => {
   try {
-    const { familyId } = req.body;
+    const { familyId } = req.query;
     const family = await Family.findById(familyId);
 
     if (!family) {
