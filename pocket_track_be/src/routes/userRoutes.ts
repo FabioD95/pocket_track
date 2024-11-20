@@ -3,7 +3,7 @@ import {
   registerUser,
   loginUser,
   getUserData,
-  getAllUsers,
+  addFamilyToUser,
 } from "../controllers/userController";
 import authMiddleware from "../middlewares/authMiddleware";
 
@@ -11,7 +11,8 @@ const router = express.Router();
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
+router.post("/addFamily", authMiddleware, addFamilyToUser);
+
 router.get("/me", authMiddleware, getUserData);
-router.get("/all", authMiddleware, getAllUsers);
 
 export default router;

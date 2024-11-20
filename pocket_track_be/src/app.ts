@@ -7,6 +7,7 @@ import userRoutes from "./routes/userRoutes";
 import transactionRoutes from "./routes/transactionRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
 import tagRoutes from "./routes/tagRoutes";
+import familyRoutes from "./routes/familyRoutes";
 
 dotenv.config();
 if (process.env.NODE_ENV !== "test") {
@@ -28,6 +29,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/tags", tagRoutes);
+app.use("/api/families", familyRoutes);
 
 app.get("/api", (req, res) => {
   res.send("Hello from Pocket Track App!");

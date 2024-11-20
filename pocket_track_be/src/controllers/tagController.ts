@@ -1,38 +1,47 @@
-import { Request, Response } from "express";
-import Tag, { ITag } from "../models/Tag";
+import { Response } from "express";
+import Tag from "../models/Tag";
+import { IAuthRequest } from "../utils/types";
+import { errorResponse } from "../utils/error";
+import Family from "../models/Family";
 
-export const addTag = async (req: Request, res: Response) => {
-  const { name } = req.body;
-
+// addTag
+export const addTag = async (req: IAuthRequest, res: Response) => {
   try {
+    const { name } = req.body;
+    if (!req.user) throw new Error("Utente non autorizzato");
+
     const existingTag = await Tag.findOne({ name });
     if (existingTag) {
       res.status(400).json({ message: "Tag già esistente" });
       return;
     }
 
-    const tag = new Tag({ name });
+    const tag = new Tag({ name, createdBy: req.user.id });
     await tag.save();
 
     res.status(201).json({ message: "Tag aggiunto con successo", tag });
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: "An unknown error occurred" });
-    }
+    errorResponse(res, error, "addTag");
   }
 };
 
-export const getAllTags = async (req: Request, res: Response) => {
+// getTags
+export const getTags = async (req: IAuthRequest, res: Response) => {
   try {
-    const tags = await Tag.find();
+    const { familyId } = req.body;
+    const family = await Family.findById(familyId);
+
+    if (!family) {
+      res.status(404).json({ message: "Famiglia non trovata" });
+      return;
+    }
+
+    const tags = await Tag.find({
+      _id: { $in: family.tags },
+    });
+
     res.json(tags);
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: "An unknown error occurred" });
-    }
+    errorResponse(res, error, "getAllTags");
   }
 };

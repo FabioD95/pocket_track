@@ -3,30 +3,37 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface ITransaction extends Document {
   amount: number;
   date: Date;
-  type: "income" | "expense";
+  isExpense: boolean;
   user: mongoose.Types.ObjectId;
   transferBeneficiary?: string;
-  category?: mongoose.Types.ObjectId; // Riferimento al modello Categoria
-  tags?: mongoose.Types.ObjectId[]; // Array di riferimenti al modello Tag
+  category?: mongoose.Types.ObjectId;
+  tags?: mongoose.Types.ObjectId[];
   description?: string;
   isNecessary?: boolean;
   isTransfer?: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-const TransactionSchema: Schema = new mongoose.Schema({
-  amount: { type: Number, required: true },
-  date: { type: Date, required: true },
-  type: { type: String, enum: ["income", "expense"], required: true },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  transferBeneficiary: { type: String },
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Category",
+const TransactionSchema: Schema = new mongoose.Schema(
+  {
+    amount: { type: Number, required: true },
+    date: { type: Date, required: true },
+    isExpense: { type: Boolean, required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    transferBeneficiary: { type: String },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+    },
+    tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag" }],
+    description: { type: String },
+    isNecessary: { type: Boolean },
+    isTransfer: { type: Boolean },
   },
-  tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag" }],
-  description: { type: String },
-  isNecessary: { type: Boolean },
-  isTransfer: { type: Boolean },
-});
+  {
+    timestamps: true,
+  }
+);
 
 export default mongoose.model<ITransaction>("Transaction", TransactionSchema);
