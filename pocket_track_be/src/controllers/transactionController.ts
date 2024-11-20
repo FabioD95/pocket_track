@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import Transaction from "../models/transaction";
 import { errorResponse } from "../utils/error";
+import Tag from "../models/Tag";
+import Category from "../models/Category";
 
 export const addTransaction = async (req: Request, res: Response) => {
   try {
@@ -44,6 +46,15 @@ export const addTransaction = async (req: Request, res: Response) => {
     res
       .status(201)
       .json({ message: "Transazione aggiunta con successo", transaction });
+
+    // update tags usageCount
+    const tagsToUpdate = await Tag.find({ _id: { $in: tags } });
+    tagsToUpdate.forEach(async (tag) => {
+      await Tag.updateOne({ _id: tag._id }, { usageCount: tag.usageCount + 1 });
+    });
+
+    // update category usageCount
+    await Category.updateOne({ _id: category }, { $inc: { usageCount: 1 } });
   } catch (error) {
     errorResponse(res, error, "addTransaction");
   }
