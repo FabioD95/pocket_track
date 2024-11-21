@@ -149,6 +149,7 @@ describe("Transaction API Tests", () => {
         isExpense: true,
         user: userId,
         familyId,
+        createdBy: userId,
       });
 
       const transaction2 = await Transaction.create({
@@ -157,6 +158,7 @@ describe("Transaction API Tests", () => {
         isExpense: false,
         user: userId,
         familyId,
+        createdBy: userId,
       });
 
       await Family.findByIdAndUpdate(familyId, {

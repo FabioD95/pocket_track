@@ -4,9 +4,10 @@ import { errorResponse } from "../utils/error";
 import Tag from "../models/Tag";
 import Category from "../models/Category";
 import Family from "../models/Family";
+import { IAuthRequest } from "../utils/types";
 
 // addTransaction
-export const addTransaction = async (req: Request, res: Response) => {
+export const addTransaction = async (req: IAuthRequest, res: Response) => {
   try {
     const {
       transaction: {
@@ -23,6 +24,7 @@ export const addTransaction = async (req: Request, res: Response) => {
       },
       familyId,
     } = req.body;
+    if (!req.user) throw new Error("Utente non autorizzato");
 
     if (isTransfer && !transferBeneficiary) {
       res.status(400).json({ message: "Il beneficiario è obbligatorio" });
@@ -45,6 +47,7 @@ export const addTransaction = async (req: Request, res: Response) => {
       description,
       isNecessary,
       isTransfer,
+      createdBy: req.user.id,
     });
     await transaction.save();
 
@@ -72,7 +75,7 @@ export const addTransaction = async (req: Request, res: Response) => {
 };
 
 // transfer function
-async function transfer(req: Request, res: Response) {
+async function transfer(req: IAuthRequest, res: Response) {
   try {
     const {
       transaction: {
@@ -85,6 +88,7 @@ async function transfer(req: Request, res: Response) {
       },
       familyId,
     } = req.body;
+    if (!req.user) throw new Error("Utente non autorizzato");
 
     const transactionOut = new Transaction({
       amount,
@@ -94,6 +98,7 @@ async function transfer(req: Request, res: Response) {
       transferBeneficiary,
       description,
       isTransfer,
+      createdBy: req.user.id,
     });
     const transactionIn = new Transaction({
       amount,
@@ -103,6 +108,7 @@ async function transfer(req: Request, res: Response) {
       transferBeneficiary: user,
       description,
       isTransfer,
+      createdBy: req.user.id,
     });
     await transactionOut.save();
     await transactionIn.save();

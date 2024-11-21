@@ -11,6 +11,7 @@ export interface ITransaction extends Document {
   description?: string;
   isNecessary?: boolean;
   isTransfer?: boolean;
+  createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -30,6 +31,11 @@ const TransactionSchema: Schema = new mongoose.Schema(
     description: { type: String },
     isNecessary: { type: Boolean },
     isTransfer: { type: Boolean },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   {
     timestamps: true,
