@@ -63,7 +63,7 @@ export const GetUserSchema = z.object({
 });
 export type GetUser = z.infer<typeof GetUserSchema>;
 
-export const GetUsersSchema = z.array(UserSchema);
+export const GetUsersSchema = z.array(UserSchema.omit({ families: true }));
 export type GetUsers = z.infer<typeof GetUsersSchema>;
 
 // Auth
@@ -107,6 +107,9 @@ export const TransactionSchema = z.object({
   isTransfer: z.boolean().nullable().optional(),
   createdAt: DateString,
   updatedAt: DateString,
+  createdBy: z
+    .string()
+    .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' }),
 });
 export type Transaction = z.infer<typeof TransactionSchema>;
 
@@ -121,6 +124,7 @@ export type GetTransaction = z.infer<typeof GetTransactionSchema>;
 
 export const PostTransactionSchema = TransactionSchema.omit({
   _id: true,
+  createdBy: true,
   createdAt: true,
   updatedAt: true,
 });

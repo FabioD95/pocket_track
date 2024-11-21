@@ -63,7 +63,9 @@ export const getUsersByFamilyId = async (req: Request, res: Response) => {
 
     const users = await User.find({
       families: familyId,
-    }).select("-password");
+    })
+      .select("-password")
+      .select("-families");
 
     res.json(users);
   } catch (error) {
