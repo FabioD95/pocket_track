@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux';
 
 import useFetch from '../hooks/useFetch';
-import { loginSuccess } from '../store/authSlice';
+import { loginSuccess } from '../store/userSlice';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthResponse, AuthResponseSchema } from '../types/apiSchemas';
@@ -51,6 +51,7 @@ export default function Auth() {
       </form>
 
       <Link to="/">home</Link>
+      <br />
       <Link to="/new-transaction">new-transaction</Link>
 
       {loading && <p>Loading...</p>}

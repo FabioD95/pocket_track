@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 
 import useAuth from '../hooks/useAuth';
+import SplashScreen from './SplashScreen';
 
 const ProtectedRoute = () => {
   const isAuthenticated = useAuth();
@@ -11,16 +12,3 @@ const ProtectedRoute = () => {
 };
 
 export default ProtectedRoute;
-
-export function SplashScreen() {
-  return (
-    <div>
-      <h1>SplashScreen</h1>
-      <img
-        src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
-        alt="loading"
-      />
-      Loading...
-    </div>
-  );
-}

@@ -1,10 +1,10 @@
 import React, { ChangeEventHandler, useEffect, useState } from 'react';
-import { Item } from '../types/apiSchemas';
+import { FetchItems, Item } from '../types/apiSchemas';
 
 interface BaseRadioSelectorProps {
   name: string;
   legend: string;
-  handleChange?: ChangeEventHandler<HTMLInputElement>;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
 }
 
 interface ItemsProps extends BaseRadioSelectorProps {
@@ -14,7 +14,7 @@ interface ItemsProps extends BaseRadioSelectorProps {
 }
 
 interface FetchItemsProps extends BaseRadioSelectorProps {
-  fetchItems: () => Promise<Item[]>;
+  fetchItems: FetchItems;
   items?: never; // Non consentito
   defaultValue?: never; // Non consentito
 }
@@ -24,7 +24,7 @@ type RadioSelectorProps = ItemsProps | FetchItemsProps;
 const RadioSelector: React.FC<RadioSelectorProps> = ({
   name,
   legend,
-  handleChange,
+  onChange,
   defaultValue,
   items,
   fetchItems,
@@ -54,7 +54,7 @@ const RadioSelector: React.FC<RadioSelectorProps> = ({
             type="radio"
             id={item._id}
             value={item._id}
-            onChange={handleChange}
+            onChange={onChange}
             defaultChecked={item._id === defaultValue}
           />
           <label htmlFor={item._id}>{item.name}</label>

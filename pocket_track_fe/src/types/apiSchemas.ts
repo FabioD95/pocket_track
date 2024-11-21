@@ -5,6 +5,8 @@ export interface Item {
   name: string;
 }
 
+export type FetchItems = () => Promise<Item[]>;
+
 // Validazione della data come stringa ISO8601
 const DateString = z.string().refine(
   (date) => {
@@ -15,11 +17,43 @@ const DateString = z.string().refine(
   }
 );
 
+// Family
+export const FamilySchema = z.object({
+  _id: z
+    .string()
+    .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' }),
+  name: z.string(),
+  transactions: z.array(
+    z
+      .string()
+      .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' })
+  ),
+  categories: z.array(
+    z
+      .string()
+      .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' })
+  ),
+  tags: z.array(
+    z
+      .string()
+      .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' })
+  ),
+  createdBy: z
+    .string()
+    .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' }),
+  createdAt: DateString,
+  updatedAt: DateString,
+});
+export type Family = z.infer<typeof FamilySchema>;
+
 // User
 export const UserSchema = z.object({
   _id: z.string(),
   email: z.string().email(),
   name: z.string(),
+  families: z.array(FamilySchema),
+  createdAt: DateString,
+  updatedAt: DateString,
 });
 export type User = z.infer<typeof UserSchema>;
 
@@ -46,14 +80,33 @@ export const TransactionSchema = z.object({
     .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' }),
   amount: z.number().positive({ message: 'Amount must be a positive number.' }),
   date: DateString, // Usa la validazione personalizzata
-  type: z.enum(['expense', 'income']),
-  user: z.string().min(1, { message: 'User is required.' }),
-  transferBeneficiary: z.string().nullable().optional(),
-  category: z.string().nullable().optional(),
-  tags: z.array(z.string().min(1)).nullable().optional(),
+  isExpense: z.boolean(),
+  user: z
+    .string()
+    .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' }),
+  transferBeneficiary: z
+    .string()
+    .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' })
+    .nullable()
+    .optional(),
+  category: z
+    .string()
+    .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' })
+    .nullable()
+    .optional(),
+  tags: z
+    .array(
+      z
+        .string()
+        .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' })
+    )
+    .nullable()
+    .optional(),
   description: z.string().nullable().optional(),
   isNecessary: z.boolean().nullable().optional(),
   isTransfer: z.boolean().nullable().optional(),
+  createdAt: DateString,
+  updatedAt: DateString,
 });
 export type Transaction = z.infer<typeof TransactionSchema>;
 
@@ -66,13 +119,27 @@ export const GetTransactionSchema = z.object({
 });
 export type GetTransaction = z.infer<typeof GetTransactionSchema>;
 
-export const PostTransactionSchema = TransactionSchema.omit({ _id: true });
+export const PostTransactionSchema = TransactionSchema.omit({
+  _id: true,
+  createdAt: true,
+  updatedAt: true,
+});
 export type PostTransaction = z.infer<typeof PostTransactionSchema>;
 
 // Categories
 export const CategorySchema = z.object({
-  _id: z.string(),
+  _id: z
+    .string()
+    .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' }),
   name: z.string(),
+  createdBy: z
+    .string()
+    .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' }),
+  usageCount: z
+    .number()
+    .nonnegative({ message: 'Usage count must be non-negative.' }),
+  createdAt: DateString,
+  updatedAt: DateString,
 });
 export type Category = z.infer<typeof CategorySchema>;
 
@@ -93,8 +160,18 @@ export type PostCategories = z.infer<typeof PostCategoriesSchema>;
 
 // Tags
 export const TagSchema = z.object({
-  _id: z.string(),
+  _id: z
+    .string()
+    .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' }),
   name: z.string(),
+  createdBy: z
+    .string()
+    .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid ObjectId format.' }),
+  usageCount: z
+    .number()
+    .nonnegative({ message: 'Usage count must be non-negative.' }),
+  createdAt: DateString,
+  updatedAt: DateString,
 });
 export type Tag = z.infer<typeof TagSchema>;
 

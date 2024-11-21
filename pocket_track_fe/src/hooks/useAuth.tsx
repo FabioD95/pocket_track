@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import fetchData from '../utils/fetchData';
-import { reset, setUser } from '../store/userSlice';
+import { setUser } from '../store/userSlice';
 import { RootState } from '../store';
 import { User, UserSchema } from '../types/apiSchemas';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,7 +11,6 @@ const useAuth = (): boolean | null => {
   const { token, isAuthenticated } = useSelector(
     (state: RootState) => state.user
   );
-  console.log('isAuthenticated', isAuthenticated);
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(
     isAuthenticated
   );
@@ -38,7 +37,6 @@ const useAuth = (): boolean | null => {
         setIsAuthorized(true);
       } catch {
         setIsAuthorized(false);
-        dispatch(reset());
       }
     };
 

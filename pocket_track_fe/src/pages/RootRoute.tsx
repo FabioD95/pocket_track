@@ -1,7 +1,7 @@
 import LandingPage from './LandingPage';
 import App from './App';
 import useAuth from '../hooks/useAuth';
-import { SplashScreen } from './ProtectedRoute';
+import SplashScreen from './SplashScreen';
 
 const RootRoute = () => {
   const isAuthenticated = useAuth();

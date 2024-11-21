@@ -63,17 +63,3 @@ createRoot(document.getElementById('root')!).render(
     </Provider>
   </StrictMode>
 );
-
-// {
-//   path: '/',
-//   element: <ProtectedRoute />,
-//   children: [
-//     { index: true, element: <App /> },
-//     {
-//       path: 'new-transaction',
-//       element: <NewTransaction />,
-//     },
-//   ],
-// },
-// // { path: '/', element: <LandingPage /> },
-// { path: '/auth', element: <Auth /> },
