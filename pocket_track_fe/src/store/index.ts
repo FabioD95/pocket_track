@@ -10,16 +10,18 @@ import {
   REGISTER,
 } from 'redux-persist';
 
-import authReducer from '../store/authSlice';
+import userReducer from './userSlice';
 
-const authPersistConfig = {
-  key: 'auth',
+const userPersistConfig = {
+  key: 'user',
   storage,
+  // whitelist: ['token'],  // only token will be persisted
+  blacklist: ['isAuthenticated'], // isAuthenticated will not be persisted
 };
 
 const store = configureStore({
   reducer: {
-    auth: persistReducer(authPersistConfig, authReducer),
+    user: persistReducer(userPersistConfig, userReducer),
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

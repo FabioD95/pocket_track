@@ -3,13 +3,24 @@ import { Navigate, Outlet } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
 const ProtectedRoute = () => {
-  const authenticated = useAuth();
+  const isAuthenticated = useAuth();
 
-  if (authenticated === null) {
-    return <div>Loading...</div>;
-  }
+  if (isAuthenticated === null) return <SplashScreen />;
 
-  return authenticated ? <Outlet /> : <Navigate to="/auth" replace />;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/auth" replace />;
 };
 
 export default ProtectedRoute;
+
+export function SplashScreen() {
+  return (
+    <div>
+      <h1>SplashScreen</h1>
+      <img
+        src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
+        alt="loading"
+      />
+      Loading...
+    </div>
+  );
+}

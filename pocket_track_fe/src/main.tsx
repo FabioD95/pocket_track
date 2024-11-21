@@ -20,7 +20,7 @@ const router = createBrowserRouter(
     },
     {
       path: '/auth',
-      element: <Auth />, // Pagina di autenticazione
+      element: <Auth />,
     },
     {
       path: '/', // Rotte protette senza prefisso
@@ -35,7 +35,7 @@ const router = createBrowserRouter(
     },
     {
       path: '*',
-      element: <NotFoundPage />, // Pagina 404
+      element: <NotFoundPage />,
     },
   ],
   {

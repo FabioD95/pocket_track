@@ -1,19 +1,30 @@
 import { useEffect, useState } from 'react';
 import fetchData from '../utils/fetchData';
-import { setUser } from '../store/authSlice';
-import store from '../store';
+import { reset, setUser } from '../store/userSlice';
+import { RootState } from '../store';
 import { User, UserSchema } from '../types/apiSchemas';
+import { useDispatch, useSelector } from 'react-redux';
 
 const useAuth = (): boolean | null => {
-  const [authenticated, setAuthenticated] = useState<boolean | null>(null);
+  const dispatch = useDispatch();
+
+  const { token, isAuthenticated } = useSelector(
+    (state: RootState) => state.user
+  );
+  console.log('isAuthenticated', isAuthenticated);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(
+    isAuthenticated
+  );
 
   useEffect(() => {
     const checkAuth = async () => {
-      const state = store.getState();
-      const token = state.auth.token;
-
       if (!token) {
-        setAuthenticated(false);
+        setIsAuthorized(false);
+        return;
+      }
+
+      if (isAuthenticated) {
+        setIsAuthorized(true);
         return;
       }
 
@@ -23,17 +34,18 @@ const useAuth = (): boolean | null => {
           route: 'users/me',
           schema: UserSchema,
         });
-        store.dispatch(setUser({ user: response }));
-        setAuthenticated(true);
+        dispatch(setUser({ user: response }));
+        setIsAuthorized(true);
       } catch {
-        setAuthenticated(false);
+        setIsAuthorized(false);
+        dispatch(reset());
       }
     };
 
     checkAuth();
-  }, []);
+  }, [dispatch, isAuthenticated, token]);
 
-  return authenticated;
+  return isAuthorized;
 };
 
 export default useAuth;
