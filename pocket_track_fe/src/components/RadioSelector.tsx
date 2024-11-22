@@ -5,18 +5,17 @@ interface BaseRadioSelectorProps {
   name: string;
   legend: string;
   onChange?: ChangeEventHandler<HTMLInputElement>;
+  defaultValue?: string;
 }
 
 interface ItemsProps extends BaseRadioSelectorProps {
   items: Item[];
-  defaultValue?: string;
   fetchItems?: never; // Non consentito
 }
 
 interface FetchItemsProps extends BaseRadioSelectorProps {
   fetchItems: FetchItems;
   items?: never; // Non consentito
-  defaultValue?: never; // Non consentito
 }
 
 type RadioSelectorProps = ItemsProps | FetchItemsProps;

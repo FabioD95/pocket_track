@@ -17,7 +17,6 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
-    console.log('request error', error);
     return Promise.reject(error);
   }
 );
@@ -31,7 +30,6 @@ axiosInstance.interceptors.response.use(
       console.log('Unauthorized, resetting store...');
       store.dispatch(reset());
     }
-    console.log('response error', error);
     return Promise.reject(error);
   }
 );

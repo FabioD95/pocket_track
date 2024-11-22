@@ -9,6 +9,8 @@ import { IAuthRequest } from "../utils/types";
 // addTransaction
 export const addTransaction = async (req: IAuthRequest, res: Response) => {
   try {
+    if (!req.user) throw new Error("Utente non autorizzato");
+
     const {
       transaction: {
         amount,
@@ -24,7 +26,11 @@ export const addTransaction = async (req: IAuthRequest, res: Response) => {
       },
       familyId,
     } = req.body;
-    if (!req.user) throw new Error("Utente non autorizzato");
+
+    if (!familyId) {
+      res.status(400).json({ message: "Parametri mancanti" });
+      return;
+    }
 
     if (isTransfer && !transferBeneficiary) {
       res.status(400).json({ message: "Il beneficiario è obbligatorio" });

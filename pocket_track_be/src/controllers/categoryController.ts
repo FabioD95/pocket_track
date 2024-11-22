@@ -7,8 +7,13 @@ import Family from "../models/Family";
 // addCategory
 export const addCategory = async (req: IAuthRequest, res: Response) => {
   try {
-    const { name, familyId } = req.body;
     if (!req.user) throw new Error("Utente non autorizzato");
+
+    const { name, familyId } = req.body;
+    if (!name || !familyId) {
+      res.status(400).json({ message: "Parametri mancanti" });
+      return;
+    }
 
     const existingCategory = await Category.findOne({ name });
     if (existingCategory) {

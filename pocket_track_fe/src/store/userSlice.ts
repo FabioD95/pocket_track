@@ -5,14 +5,14 @@ export interface UserState {
   user: null | User;
   token: string | null;
   isAuthenticated: boolean | null;
-  familyId: string | null;
+  defaultFamilyId: string | null;
 }
 
 const initialState: UserState = {
   user: null,
   token: null,
   isAuthenticated: null,
-  familyId: null,
+  defaultFamilyId: null,
 };
 
 const userSlice = createSlice({
@@ -27,8 +27,11 @@ const userSlice = createSlice({
       state.user = action.payload.user;
       state.isAuthenticated = true;
     },
-    setDefaultFamilyId(state, action: PayloadAction<{ familyId: string }>) {
-      state.familyId = action.payload.familyId;
+    setDefaultFamilyId(
+      state,
+      action: PayloadAction<{ defaultFamilyId: string }>
+    ) {
+      state.defaultFamilyId = action.payload.defaultFamilyId;
     },
     reset: () => initialState, // to test
   },

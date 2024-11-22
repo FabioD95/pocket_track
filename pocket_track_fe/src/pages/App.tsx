@@ -17,7 +17,7 @@ function App() {
   const [familyId, setFamilyId] = useState<string>();
 
   useEffect(() => {
-    if (familyId) dispatch(setDefaultFamilyId({ familyId }));
+    if (familyId) dispatch(setDefaultFamilyId({ defaultFamilyId: familyId }));
   }, [dispatch, families, familyId]);
 
   return (

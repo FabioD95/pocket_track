@@ -15,18 +15,34 @@ import {
   PostTransaction,
   Tags,
   TagsSchema,
+  User,
 } from '../types/apiSchemas';
 import './NewTransaction.css';
 import RadioSelector from '../components/RadioSelector';
 import ListSelector from '../components/ListSelector';
 import fetchData from '../utils/fetchData';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
+
+const transactionTypes = [
+  { _id: 'expense', name: 'expense' },
+  { _id: 'income', name: 'income' },
+  { _id: 'transfer', name: 'transfer' },
+];
 
 export default function NewTransaction() {
+  const navigate = useNavigate();
+
+  const { user, defaultFamilyId }: { user: User; defaultFamilyId: string } =
+    useSelector((state: RootState) => state.user);
+
+  if (!defaultFamilyId) navigate('/');
+
   const { loading, error, fetchFn } = useFetch<GetTransaction>();
 
   const [isTransfer, setIsTransfer] = useState(false);
-  const [type, setType] = useState<'expense' | 'income'>('expense');
-  const [isValidate, setIsValidate] = useState(false);
+  const [isExpense, setIsExpense] = useState(true);
   const [selectedTags, setSelectedTags] = useState<Item[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<Item>();
   const [date, setDate] = useState<string>(
@@ -37,11 +53,6 @@ export default function NewTransaction() {
     event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
 
-    if (!isValidate) {
-      console.log('invalid amount');
-      return;
-    }
-
     const formattedDate: string = new Date(
       formData.get('date') as string
     ).toISOString();
@@ -49,24 +60,26 @@ export default function NewTransaction() {
     const body: PostTransaction = {
       amount: Number(formData.get('amount')),
       date: formattedDate,
-      type: type,
+      isExpense,
       user: formData.get('user') as string,
       transferBeneficiary: formData.get('transferBeneficiary') as string,
       category: selectedCategories?._id as string,
       tags: selectedTags.map((tag) => tag._id),
       description: formData.get('description') as string,
       isNecessary: formData.get('isNecessary') === 'on',
-      isTransfer: isTransfer,
+      isTransfer,
     };
 
     fetchFn({
       method: 'post',
       route: `transactions`,
       schema: GetTransactionSchema,
-      body: body,
+      body: { transaction: body, familyId: defaultFamilyId },
     });
 
     (event.target as HTMLFormElement).reset();
+    setSelectedCategories(undefined);
+    setSelectedTags([]);
   }
 
   function handleTypeChange({
@@ -74,85 +87,77 @@ export default function NewTransaction() {
   }: React.ChangeEvent<HTMLInputElement>) {
     if (value === 'transfer') {
       setIsTransfer(true);
-      setType('expense');
+      setIsExpense(true);
     }
     if (value === 'expense') {
       setIsTransfer(false);
-      setType('expense');
+      setIsExpense(true);
     }
     if (value === 'income') {
       setIsTransfer(false);
-      setType('income');
-    }
-  }
-
-  function handleAmountBlur({
-    target: { value },
-  }: React.FocusEvent<HTMLInputElement>) {
-    const numericValue = parseFloat(value);
-    if (numericValue > 0) {
-      setIsValidate(true);
-    } else {
-      setIsValidate(false);
+      setIsExpense(false);
     }
   }
 
   const fetchUsers = useCallback(() => {
     return fetchData<GetUsers>({
       method: 'get',
-      route: 'users/all',
+      route: 'families/users',
+      params: { familyId: defaultFamilyId },
       schema: GetUsersSchema,
     });
-  }, []);
+  }, [defaultFamilyId]);
 
   const fetchCategories = useCallback(() => {
     return fetchData<Categories>({
       method: 'get',
       route: 'categories',
+      params: { familyId: defaultFamilyId },
       schema: CategoriesSchema,
     });
-  }, []);
+  }, [defaultFamilyId]);
 
-  const createCategories = useCallback(async (name: string) => {
-    const response = await fetchData<GetCategory>({
-      method: 'post',
-      route: 'categories',
-      schema: GetCategorySchema,
-      body: { name },
-    });
-    return response.category;
-  }, []);
+  const createCategories = useCallback(
+    async (name: string) => {
+      const response = await fetchData<GetCategory>({
+        method: 'post',
+        route: 'categories',
+        schema: GetCategorySchema,
+        body: { name, familyId: defaultFamilyId },
+      });
+      return response.category;
+    },
+    [defaultFamilyId]
+  );
 
   const fetchTags = useCallback(() => {
     return fetchData<Tags>({
       method: 'get',
       route: 'tags',
+      params: { familyId: defaultFamilyId },
       schema: TagsSchema,
     });
-  }, []);
+  }, [defaultFamilyId]);
 
-  const createTags = useCallback(async (name: string) => {
-    const response = await fetchData<GetTag>({
-      method: 'post',
-      route: 'tags',
-      schema: GetTagSchema,
-      body: { name },
-    });
-    return response.tag;
-  }, []);
+  const createTags = useCallback(
+    async (name: string) => {
+      const response = await fetchData<GetTag>({
+        method: 'post',
+        route: 'tags',
+        schema: GetTagSchema,
+        body: { name, familyId: defaultFamilyId },
+      });
+      return response.tag;
+    },
+    [defaultFamilyId]
+  );
 
   return (
     <div className="new-transaction-container">
       <h1>New Transaction</h1>
 
       <form className="new-transaction-form" onSubmit={handleSubmit}>
-        <input
-          name="amount"
-          type="number"
-          placeholder="Amount"
-          required
-          onBlur={handleAmountBlur}
-        />
+        <input name="amount" type="number" placeholder="Amount" required />
         <input
           type="date"
           name="date"
@@ -163,16 +168,17 @@ export default function NewTransaction() {
         <RadioSelector
           name="type"
           legend="Type"
-          handleChange={handleTypeChange}
+          onChange={handleTypeChange}
           defaultValue={'expense'}
-          items={[
-            { _id: 'expense', name: 'expense' },
-            { _id: 'income', name: 'income' },
-            { _id: 'transfer', name: 'transfer' },
-          ]}
+          items={transactionTypes}
         />
 
-        <RadioSelector name="user" legend="User" fetchItems={fetchUsers} />
+        <RadioSelector
+          name="user"
+          legend="User"
+          fetchItems={fetchUsers}
+          defaultValue={user._id}
+        />
 
         {!isTransfer ? (
           <>
@@ -214,6 +220,8 @@ export default function NewTransaction() {
           {loading ? 'Submitting...' : 'Submit'}
         </button>
       </form>
+
+      <Link to="/">home</Link>
 
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}
