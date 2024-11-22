@@ -52,7 +52,7 @@ export default function Auth() {
 
       <Link to="/">home</Link>
       <br />
-      <Link to="/new-transaction">new-transaction</Link>
+      <Link to="/new_transaction">new_transaction</Link>
 
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}

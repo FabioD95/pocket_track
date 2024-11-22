@@ -153,10 +153,10 @@ export default function NewTransaction() {
   );
 
   return (
-    <div className="new-transaction-container">
+    <div className="new_transaction-container">
       <h1>New Transaction</h1>
 
-      <form className="new-transaction-form" onSubmit={handleSubmit}>
+      <form className="new_transaction-form" onSubmit={handleSubmit}>
         <input name="amount" type="number" placeholder="Amount" required />
         <input
           type="date"

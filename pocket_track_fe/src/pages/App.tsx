@@ -34,7 +34,7 @@ function App() {
         {families.find((family) => family._id === familyId)?.name}
       </h3>
 
-      <Link to="/new-transaction">new-transaction</Link>
+      <Link to="/new_transaction">new_transaction</Link>
       <br />
       <button onClick={() => dispatch(reset())}>log out</button>
     </>

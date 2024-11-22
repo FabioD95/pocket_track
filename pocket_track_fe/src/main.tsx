@@ -27,7 +27,7 @@ const router = createBrowserRouter(
       element: <ProtectedRoute />,
       children: [
         {
-          path: 'new-transaction', // Direttamente sotto '/'
+          path: 'new_transaction', // Direttamente sotto '/'
           element: <NewTransaction />,
         },
         // Puoi aggiungere altre rotte protette qui
