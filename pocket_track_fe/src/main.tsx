@@ -4,6 +4,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
+import './fonts/Menlo-Regular.ttf';
+
 import './index.css';
 import store, { persistor } from './store';
 import Auth from './pages/Auth.tsx';

@@ -1,17 +1,23 @@
+@font-face {
+  font-family: 'Menlo-Regular';
+  src: local('Menlo-Regular'), url(./fonts/Menlo-Regular.ttf) format('truetype'); ;
+}
+
 :root {
   color-scheme: light dark;
+  font-family: 'Menlo-Regular';
 }
 
 /* Tema chiaro */
 html.light {
-  --background-color: #b3ff00;
-  --text-color: #000000;
+  --background-color: #cbfffc;
+  --text-color: #004541;
 }
 
 /* Tema scuro */
 html.dark {
-  --background-color: #160ab4;
-  --text-color: #ffffff;
+  --background-color: #1f1f1f;
+  --text-color: #4FC1FF;
 }
 
 /* Applicazione delle variabili */
