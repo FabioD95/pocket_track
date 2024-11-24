@@ -7,6 +7,7 @@ import RadioSelector from '../components/RadioSelector';
 import { reset, setDefaultFamilyId } from '../store/userSlice';
 import { RootState } from '../store';
 import { Family } from '../types/apiSchemas';
+import useTheme from '../hooks/useTheme';
 
 function App() {
   const dispatch = useDispatch();
@@ -19,6 +20,8 @@ function App() {
   useEffect(() => {
     if (familyId) dispatch(setDefaultFamilyId({ defaultFamilyId: familyId }));
   }, [dispatch, families, familyId]);
+
+  const { themeMode, toggleTheme, resetTheme } = useTheme();
 
   return (
     <>
@@ -37,6 +40,12 @@ function App() {
       <Link to="/new_transaction">new_transaction</Link>
       <br />
       <button onClick={() => dispatch(reset())}>log out</button>
+      <br />
+      <button onClick={toggleTheme}>
+        Toggle Theme (Current: {themeMode === 'auto' ? 'Auto' : themeMode})
+      </button>
+      <br />
+      <button onClick={resetTheme}>Reset to System Theme</button>
     </>
   );
 }
