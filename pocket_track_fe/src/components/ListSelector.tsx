@@ -117,28 +117,39 @@ const ListSelector: FC<ListSelectorProps> = memo(
     }, [availableItems, inputValue, selectedItems]);
 
     return (
-      <fieldset style={{ border: '1px solid #ccc', padding: '10px' }}>
+      <fieldset
+        style={{
+          // border: '1px solid #ccc',
+          padding: '10px',
+        }}
+      >
         {legend && <legend>{legend}</legend>}
-        <div style={{ position: 'relative', width: '300px' }}>
+        <div
+          style={{
+            position: 'relative',
+            width: '300px',
+          }}
+        >
           <div
             style={{
               display: 'flex',
               flexWrap: 'wrap',
               gap: '5px',
-              border: '1px solid #ccc',
-              padding: '5px',
-              borderRadius: '5px',
+              // border: '1px solid #ccc',
+              // padding: '5px',
+              // borderRadius: '5px',
             }}
           >
             {selectedItems.map((item) => (
               <div
                 key={item._id}
+                className="list_selected_item"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  backgroundColor: '#e0e0e0',
+                  // backgroundColor: '#e0e0e0',
                   padding: '5px',
-                  borderRadius: '5px',
+                  // borderRadius: '5px',
                   cursor: 'default',
                 }}
               >
@@ -161,7 +172,11 @@ const ListSelector: FC<ListSelectorProps> = memo(
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               onFocus={() => setIsDropdownVisible(true)}
-              style={{ border: 'none', outline: 'none', flex: '1' }}
+              style={{
+                border: 'none',
+                outline: 'none',
+                flex: '1',
+              }}
               placeholder={placeholder}
             />
             {inputValue && (
@@ -183,6 +198,7 @@ const ListSelector: FC<ListSelectorProps> = memo(
           {isDropdownVisible && filteredItems.length > 0 && (
             <ul
               ref={dropdownRef}
+              className="list_dropdown"
               style={{
                 position: 'absolute',
                 top: '100%',
@@ -190,8 +206,8 @@ const ListSelector: FC<ListSelectorProps> = memo(
                 right: '0',
                 maxHeight: '150px',
                 overflowY: 'auto',
-                border: '1px solid #ccc',
-                backgroundColor: 'white',
+                // border: '1px solid #ccc',
+                // backgroundColor: 'white',
                 listStyle: 'none',
                 margin: '0',
                 padding: '0',
@@ -203,9 +219,9 @@ const ListSelector: FC<ListSelectorProps> = memo(
                   key={item._id}
                   onClick={() => addItem(item)}
                   style={{
-                    padding: '8px',
+                    // padding: '8px',
                     cursor: 'pointer',
-                    borderBottom: '1px solid #f0f0f0',
+                    // borderBottom: '1px solid #f0f0f0',
                   }}
                   onMouseDown={(e) => e.preventDefault()}
                 >

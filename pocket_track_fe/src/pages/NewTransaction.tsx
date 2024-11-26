@@ -201,10 +201,10 @@ export default function NewTransaction() {
               placeholder="Select a tag..."
             />
 
-            <div>
+            <fieldset>
               <input name="isNecessary" id="isNecessary" type="checkbox" />
               <label htmlFor="isNecessary">isNecessary</label>
-            </div>
+            </fieldset>
           </>
         ) : (
           <RadioSelector

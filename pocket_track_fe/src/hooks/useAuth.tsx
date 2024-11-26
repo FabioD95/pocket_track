@@ -27,8 +27,6 @@ const useAuth = (): boolean | null => {
         return;
       }
 
-      console.log('Checking auth');
-
       try {
         const response = await fetchData<User>({
           method: 'get',
