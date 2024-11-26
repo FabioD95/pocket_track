@@ -13,6 +13,7 @@ import ProtectedRoute from './pages/ProtectedRoute.tsx';
 import NewTransaction from './pages/NewTransaction.tsx';
 import RootRoute from './pages/RootRoute.tsx';
 import NotFoundPage from './pages/NotFoundPage.tsx';
+import ThemeProvider from './pages/ThemeProvider.tsx';
 
 const router = createBrowserRouter(
   [
@@ -55,12 +56,14 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <RouterProvider
-          router={router}
-          future={{
-            v7_startTransition: true,
-          }}
-        />
+        <ThemeProvider>
+          <RouterProvider
+            router={router}
+            future={{
+              v7_startTransition: true,
+            }}
+          />
+        </ThemeProvider>
       </PersistGate>
     </Provider>
   </StrictMode>

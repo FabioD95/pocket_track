@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -6,18 +6,16 @@ import './App.css';
 import RadioSelector from '../components/RadioSelector';
 import { reset, setDefaultFamilyId } from '../store/userSlice';
 import { RootState } from '../store';
-import { Family } from '../types/apiSchemas';
+import { Family, User } from '../types/apiSchemas';
 import useTheme from '../hooks/useTheme';
 
 function App() {
   const dispatch = useDispatch();
 
-  const {
-    user: { families },
-    defaultFamilyId,
-  }: { user: { families: Family[] }; defaultFamilyId: string } = useSelector(
-    (state: RootState) => state.user
-  );
+  const { user, defaultFamilyId }: { user: User; defaultFamilyId: string } =
+    useSelector((state: RootState) => state.user);
+
+  const families: Family[] = useMemo(() => user?.families || [], [user]);
 
   const [familyId, setFamilyId] = useState<string>();
 
@@ -26,6 +24,10 @@ function App() {
   }, [dispatch, families, familyId]);
 
   const { themeMode, toggleTheme, resetTheme } = useTheme();
+
+  if (!families || families.length === 0) {
+    return <p>Loading families...</p>; // Messaggio o loader durante il caricamento
+  }
 
   return (
     <>

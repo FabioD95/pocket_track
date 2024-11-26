@@ -17,7 +17,6 @@ import {
   TagsSchema,
   User,
 } from '../types/apiSchemas';
-import './NewTransaction.css';
 import RadioSelector from '../components/RadioSelector';
 import ListSelector from '../components/ListSelector';
 import fetchData from '../utils/fetchData';
