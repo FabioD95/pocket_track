@@ -42,6 +42,7 @@ const router = createBrowserRouter(
     },
   ],
   {
+    basename: '/pocket_track', // Specifica il prefisso delle rotte
     future: {
       v7_relativeSplatPath: true,
       v7_fetcherPersist: true,
