@@ -30,3 +30,7 @@ Questo progetto utilizza Docker per la containerizzazione. MongoDB Atlas è usat
 
 - docker ps
 - docker logs <CONTAINER_ID>
+
+# creare una imagine
+
+- docker buildx build --platform linux/amd64 -t fabiod95/pocket_track_be-backend .
