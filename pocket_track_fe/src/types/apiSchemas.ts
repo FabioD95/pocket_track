@@ -46,6 +46,12 @@ export const FamilySchema = z.object({
 });
 export type Family = z.infer<typeof FamilySchema>;
 
+export const GetFamilySchema = z.object({
+  family: FamilySchema,
+  message: z.string(),
+});
+export type GetFamily = z.infer<typeof GetFamilySchema>;
+
 // User
 export const UserSchema = z.object({
   _id: z.string(),

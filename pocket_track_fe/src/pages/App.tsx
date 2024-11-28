@@ -1,13 +1,20 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import './App.css';
-import RadioSelector from '../components/RadioSelector';
 import { reset, setDefaultFamilyId } from '../store/userSlice';
 import { RootState } from '../store';
-import { Family, User } from '../types/apiSchemas';
+import {
+  Family,
+  GetFamily,
+  GetFamilySchema,
+  Item,
+  User,
+} from '../types/apiSchemas';
 import useTheme from '../hooks/useTheme';
+import fetchData from '../utils/fetchData';
+import ListSelector from '../components/ListSelector';
 
 function App() {
   const dispatch = useDispatch();
@@ -17,11 +24,21 @@ function App() {
 
   const families: Family[] = useMemo(() => user?.families || [], [user]);
 
-  const [familyId, setFamilyId] = useState<string>();
+  const [family, setFamily] = useState<Item>();
 
   useEffect(() => {
-    if (familyId) dispatch(setDefaultFamilyId({ defaultFamilyId: familyId }));
-  }, [dispatch, families, familyId]);
+    if (family) dispatch(setDefaultFamilyId({ defaultFamilyId: family._id }));
+  }, [dispatch, families, family]);
+
+  const createFamily = useCallback(async (name: string) => {
+    const response = await fetchData<GetFamily>({
+      method: 'post',
+      route: 'families',
+      schema: GetFamilySchema,
+      body: { name },
+    });
+    return response.family;
+  }, []);
 
   const { themeMode, toggleTheme, resetTheme } = useTheme();
 
@@ -32,16 +49,28 @@ function App() {
   return (
     <>
       <h1>App</h1>
-      <RadioSelector
+      {/* <RadioSelector
         name="families"
         legend="Chose Family"
         items={families}
         onChange={({ target: { value } }) => setFamilyId(value)}
         defaultValue={defaultFamilyId}
+      /> */}
+
+      <ListSelector
+        items={families}
+        createItem={createFamily}
+        onItemsChange={(tags) => setFamily(tags[0])}
+        allowMultiple={false}
+        legend="Family"
+        placeholder="Select a family..."
+        defaultValue={families.filter(
+          (family) => family._id === defaultFamilyId
+        )}
       />
       <h3>
         selected family name:
-        {families.find((family) => family._id === familyId)?.name}
+        {families.find((family) => family._id === family._id)?.name}
       </h3>
 
       <Link to="/new_transaction">new_transaction</Link>

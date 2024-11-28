@@ -1,26 +1,40 @@
 import { useState, useEffect, useRef, useMemo, memo, FC } from 'react';
 import { Item } from '../types/apiSchemas';
 
-interface ListSelectorProps {
-  fetchItems: () => Promise<Item[]>;
+interface BaseListSelectorProps {
   createItem: (name: string) => Promise<Item>;
   onItemsChange: (selectedItems: Item[]) => void;
   allowMultiple?: boolean;
   legend?: string;
   placeholder?: string;
+  defaultValue?: Item[];
 }
+
+interface ItemsProps extends BaseListSelectorProps {
+  fetchItems?: never;
+  items: Item[];
+}
+
+interface FetchItemsProps extends BaseListSelectorProps {
+  fetchItems: () => Promise<Item[]>;
+  items?: never;
+}
+
+type ListSelectorProps = ItemsProps | FetchItemsProps;
 
 const ListSelector: FC<ListSelectorProps> = memo(
   ({
     fetchItems,
+    items,
     createItem,
     onItemsChange,
     allowMultiple = true,
     legend,
     placeholder = 'Aggiungi un elemento...',
+    defaultValue = [],
   }) => {
-    const [availableItems, setAvailableItems] = useState<Item[]>([]);
-    const [selectedItems, setSelectedItems] = useState<Item[]>([]);
+    const [availableItems, setAvailableItems] = useState<Item[]>(items || []);
+    const [selectedItems, setSelectedItems] = useState<Item[]>(defaultValue);
     const [inputValue, setInputValue] = useState<string>('');
     const [isDropdownVisible, setIsDropdownVisible] = useState<boolean>(false);
 
@@ -29,12 +43,14 @@ const ListSelector: FC<ListSelectorProps> = memo(
 
     // Fetch degli elementi disponibili
     useEffect(() => {
-      const fetchData = async () => {
-        const items = await fetchItems();
-        setAvailableItems(items);
-      };
+      if (fetchItems) {
+        const fetchData = async () => {
+          const items = await fetchItems();
+          setAvailableItems(items);
+        };
 
-      fetchData();
+        fetchData();
+      }
     }, [fetchItems]);
 
     // Chiusura dropdown quando si clicca fuori
@@ -115,6 +131,10 @@ const ListSelector: FC<ListSelectorProps> = memo(
           !selectedItems.some((i) => i._id === item._id)
       );
     }, [availableItems, inputValue, selectedItems]);
+
+    useEffect(() => {
+      setSelectedItems(defaultValue);
+    }, [defaultValue]);
 
     return (
       <fieldset
