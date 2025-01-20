@@ -52,3 +52,5 @@ export default tseslint.config({
 # to build develop
 
 - vite build --mode development
+
+branch to deploy: auto_deploy

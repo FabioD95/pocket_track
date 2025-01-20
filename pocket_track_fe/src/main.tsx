@@ -15,6 +15,29 @@ import RootRoute from './pages/RootRoute.tsx';
 import NotFoundPage from './pages/NotFoundPage.tsx';
 import ThemeProvider from './pages/ThemeProvider.tsx';
 
+// Import the functions you need from the SDKs you need
+import { initializeApp } from 'firebase/app';
+import { getAnalytics } from 'firebase/analytics';
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: 'AIzaSyB9k3L_EKUDUiE6-XOpz_AAYK2V0-wldvE',
+  authDomain: 'pocket-app-track.firebaseapp.com',
+  projectId: 'pocket-app-track',
+  storageBucket: 'pocket-app-track.firebasestorage.app',
+  messagingSenderId: '575597541966',
+  appId: '1:575597541966:web:464184795e0dde7634211f',
+  measurementId: 'G-2KMXEL4L9H',
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+// const analytics = getAnalytics(app);
+getAnalytics(app);
+
 const router = createBrowserRouter(
   [
     {
