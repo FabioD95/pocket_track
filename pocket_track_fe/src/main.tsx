@@ -15,6 +15,8 @@ import RootRoute from './pages/RootRoute.tsx';
 import NotFoundPage from './pages/NotFoundPage.tsx';
 import ThemeProvider from './pages/ThemeProvider.tsx';
 
+console.log('App is loading...');
+
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
@@ -65,7 +67,7 @@ const router = createBrowserRouter(
     },
   ],
   {
-    basename: '/pocket_track', // Specifica il prefisso delle rotte
+    // basename: '/pocket_track', // Specifica il prefisso delle rotte
     future: {
       v7_relativeSplatPath: true,
       v7_fetcherPersist: true,
