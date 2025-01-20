@@ -14,8 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: cd pocket_track_fe && npm i && npm run build
-      - uses: cd pocket_track_fe && FirebaseExtended/action-hosting-deploy@v0
+      - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_POCKET_APP_TRACK }}"
           projectId: pocket-app-track
+          entryPoint: pocket_track_fe # Modifica con la tua sottodirectory
